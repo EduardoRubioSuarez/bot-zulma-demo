@@ -105,7 +105,7 @@ input::placeholder{color:var(--mut)}
 <noscript><p style="font:16px/1.5 system-ui,sans-serif;padding:24px;margin:0">Este simulador necesita JavaScript. Si lo abriste desde un archivo en WhatsApp o Archivos, ábrelo desde un enlace en Safari o Chrome.</p></noscript>
 <div class="phone" id="phone">
   <header>
-    <div class="av" aria-hidden="true">Z</div>
+    <div class="av" aria-hidden="true">R</div>
     <div class="who">
       <b><span>Zulma Dahian Extensiones</span>
         <svg width="16" height="16" viewBox="0 0 24 24" aria-label="Cuenta de empresa verificada"><path fill="#25d366" d="M12 1.5l2.6 1.9 3.2-.1 1 3.1 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3.1-3.2-.1L12 22.5l-2.6-1.9-3.2.1-1-3.1-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3.1 3.2.1z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M8 12.2l2.7 2.7L16.2 9.4"/></svg>
@@ -145,40 +145,27 @@ const info = {
   valoracion_min:'45',
   direccion:'Boulevard Colosio #1825, entre J. Mujica y Toronja. La Paz, BCS.',
   maps:'https://www.google.com/maps/search/?api=1&query=Boulevard+Colosio+1825+La+Paz+BCS',
-  horarios:'Lunes a viernes: 9:00 a.m. – 7:00 p.m.\nSábado: 9:00 a.m. – 2:00 p.m.\nDomingo: Cerrado',
-  hora_apertura:'9', hora_cierre:'19', hora_cierre_sabado:'14', dias_laborales:'1,2,3,4,5,6',
+  horarios:'Lunes a viernes, con cita a las 5:00 PM, 6:00 PM o 7:00 PM\nSábado y domingo: Cerrado',
+  dias_laborales:'1,2,3,4,5', horas_cita:'17:00,18:00,19:00',
   asesor:'Con gusto 🤍 Una persona de Recepción te responderá por este mismo chat en cuanto pueda. Mientras tanto, el asistente automático no te responderá.',
   pausa_asesor_min:'90'
 };
-const precios = [
- ['cabello_oscuro','cab_osc_18',33],['cabello_oscuro','cab_osc_20',36],['cabello_oscuro','cab_osc_22',39],['cabello_oscuro','cab_osc_24',42],['cabello_oscuro','cab_osc_26',45],['cabello_oscuro','cab_osc_28',48],
- ['cabello_claro','cab_claro_18',43],['cabello_claro','cab_claro_20',46],['cabello_claro','cab_claro_22',49],['cabello_claro','cab_claro_24',52],['cabello_claro','cab_claro_26',55],['cabello_claro','cab_claro_28',58],
- ['recargo','rizado',5],['preparacion','prep_microchip',10],['preparacion','prep_nanochip',15],['preparacion','prep_tape',10],['preparacion','prep_cortinas',0],
- ['aplicacion','apl_microchip',10],['aplicacion','apl_nanochip',15],['aplicacion','apl_tape',10],['aplicacion','apl_cortinas',20],['retiro','retiro',5]
-].map(([categoria,clave,precioPorGramoMXN])=>({categoria,clave,precioPorGramoMXN}));
-
 const money=n=>'$'+Number(n).toLocaleString('es-MX');
-const p=k=>{const r=precios.find(x=>x.clave===k);return r?r.precioPorGramoMXN:0};
-const lineaCab=cat=>precios.filter(x=>x.categoria===cat).map(x=>x.clave.split('_').pop()+'" '+money(x.precioPorGramoMXN)).join(' · ');
+const NEGOCIO='Zulma Dahian Extensiones'; // nombre del negocio (cambiar aquí)
 const durVal=Number(info.valoracion_min||45);
-const firma='\n\n*ZULMA DAHIAN EXTENSIONES*\n_Luxury Hair Extensions._';
-
-function textoPrecios(){return '🛍️ *Precios por gramo* (MXN)\n\n✨ *Cabello virgen, tono oscuro natural*\n'+lineaCab('cabello_oscuro')+'\n\n✨ *Tonos café, miel o rubio*\n'+lineaCab('cabello_claro')+'\n_Cabello rizado: +'+money(p('rizado'))+' por gramo_\n\n🤍 *Preparación*\nMicrochip '+money(p('prep_microchip'))+' · Nanochip '+money(p('prep_nanochip'))+' · Tape '+money(p('prep_tape'))+'\n\n🤍 *Aplicación*\nMicrochip '+money(p('apl_microchip'))+' · Nanochip '+money(p('apl_nanochip'))+' · Tape '+money(p('apl_tape'))+' · Cortinas '+money(p('apl_cortinas'))+'\n\n🤍 *Retiro:* '+money(p('retiro'))+'\n\n➖ Total = gramos × (cabello + rizado + preparación + aplicación).\n\nLos gramos los define la especialista en tu valoración, que *no tiene ningún costo* (~'+durVal+' min). Ahí te damos tu precio final.\n\n¿Deseas agendarla? 🤍'}
+const firma='\n\n*'+NEGOCIO.toUpperCase()+'*';
 
 const txt=b=>({type:'text',body:b});
 const buttons=(b,l)=>({type:'buttons',body:b,items:l.map(x=>({id:x[0],title:x[1]}))});
 const lista=(b,label,rows)=>({type:'list',body:b,label,items:rows});
 
-// Motivo de la cita según la pantalla desde la que el cliente pulsó "Agendar cita"
-const MOTIVOS={gen:'Valoración general',pre:'Consulta de precios',ext:'Extensiones',pel:'Pelucas y prótesis',alo:'Alopecia o pérdida de cabello',tec:'Técnicas de aplicación'};
-const AG=k=>['g_'+k,'📅 Agendar cita'];
-const AGENDAR=AG('gen'),MENU=['m_menu','↩️ Menú principal'],MASSERV=['m_info','↩️ Más servicios'];
-const menu=intro=>lista((intro||'Buen día, te damos la bienvenida a Zulma Dahian Extensiones.\n\nNos encanta tenerte aquí. Queremos brindarte una atención personalizada desde el primer momento y ayudarte a encontrar la mejor opción para ti.')+'\n\nPor favor, selecciona la opción que deseas consultar 👇'+firma,'Ver opciones',[
- {id:'g_gen',title:'📅 Agendar cita'},{id:'m_info',title:'✨ Servicios y técnicas'},{id:'m_servicios',title:'🛍️ Precios'},
- {id:'m_ubicacion',title:'📍 Horarios y ubicación'},{id:'m_asesor',title:'💬 Hablar con alguien'}]);
+const MENU=['m_menu','↩️ Menú anterior'];
+const menu=intro=>lista((intro||'Hola! Bienvenida a '+NEGOCIO+'.\nQueremos brindarte una experiencia eficiente desde el primer momento.')+'\n\nSelecciona la opción que deseas:','Ver opciones',[
+ {id:'m_agendar',title:'📅 Agendar cita'},{id:'m_info',title:'✨ Conoce servicios'},{id:'m_ubicacion',title:'📍 Ubicación y horarios'},{id:'m_asesor',title:'💬 Hablar a Recepción'}]);
 
 const DIAS=['dom','lun','mar','mié','jue','vie','sáb'],MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const DIASL=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],MESESL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const h12=hh=>{const [h,m]=hh.split(':').map(Number);return (h%12||12)+':'+pad(m)+' '+(h<12?'AM':'PM')};
 const pad=n=>String(n).padStart(2,'0');
 const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const wd=d=>d.getDay()===0?7:d.getDay();
@@ -186,8 +173,10 @@ const fechaLarga=f=>{const [y,m,d]=f.split('-').map(Number);const dt=new Date(y,
 
 let ses,pausadoHasta=0;
 const perfil='Cliente Demo'; // en WhatsApp real: nombre del perfil del cliente
-const fresh=()=>({paso:'menu',servicio:'',motivo:'',motivoClave:'',duracionMin:0,fecha:'',hora:'',nombre:''});
+const fresh=()=>({paso:'menu',servicio:'',motivo:'',duracionMin:0,fecha:'',hora:'',nombre:'',volver:''});
 ses=fresh();
+let citas=[]; // citas confirmadas (en producción: Google Calendar)
+const libresDe=(fecha,now)=>{const [y,m,d]=fecha.split('-').map(Number);return info.horas_cita.split(',').filter(h=>{const [hh,mm]=h.split(':').map(Number);return new Date(y,m-1,d,hh,mm).getTime()>now&&!citas.some(c=>c.fecha===fecha&&c.hora===h)})};
 let registro=null; // lo que se guardaría en Calendar y Sheets al confirmar
 
 // El bot reacciona a botones/listas (id). El texto solo se acepta al pedir el nombre; en cualquier otro momento muestra el menú.
@@ -197,40 +186,40 @@ function decide(id,texto){
   const s=Object.assign({},ses); const paso=s.paso;
   const reset=()=>{Object.assign(s,fresh())};
   let payload,pausa=0;
-  if(id==='m_servicios'){const b=textoPrecios();payload=b.length<=1024?buttons(b,[AG('pre'),MENU]):txt(b);reset()}
-  else if(id.indexOf('g_')===0){
-    // Agendar: va directo a elegir fecha. El motivo (de qué pantalla vino el cliente) se guarda en la sesión.
-    const clave=id.slice(2);reset();
-    s.motivo=MOTIVOS[clave]||MOTIVOS.gen;s.motivoClave=MOTIVOS[clave]?clave:'gen';
-    s.servicio='Valoración presencial';s.duracionMin=durVal;
+  const fechasLista=body=>{
     const lab=info.dias_laborales.split(',').map(Number),filas=[];
-    for(let d=0;d<21&&filas.length<7;d++){const dia=new Date();dia.setDate(dia.getDate()+d);if(lab.indexOf(wd(dia))<0)continue;
+    for(let d=0;d<30&&filas.length<9;d++){const dia=new Date();dia.setDate(dia.getDate()+d);if(lab.indexOf(wd(dia))<0)continue;if(!libresDe(iso(dia),now).length)continue;
       filas.push({id:'f_'+iso(dia),title:DIAS[dia.getDay()]+' '+dia.getDate()+' '+MESES[dia.getMonth()]})}
-    payload=lista('✨ *Tu experiencia Zulma Dahian Extensiones comienza con una valoración personalizada.*\n\nHacemos un análisis capilar completo: salud del cuero cabelludo y folículos, cantidad, densidad, largo, color y el resultado que deseas lograr. 🤍\n\n➖ Dura aproximadamente '+durVal+' minutos y *NO TIENE NINGÚN COSTO*.\n\n📅 ¿Qué día te acomoda?','Ver fechas',filas)}
-  else if(id==='m_info'){reset();payload=lista('✨ *Servicios y técnicas*\n\nContamos con soluciones estéticas y funcionales, todo comienza con una valoración personalizada.\n\n¿Cuál de nuestros servicios te gustaría conocer? 🤍','Ver opciones',[
-    {id:'i_ext',title:'🤍 Extensiones'},{id:'i_pel',title:'👑 Pelucas y prótesis'},{id:'i_alo',title:'🌷 Alopecia o pérdida'},{id:'i_tec',title:'✨ Técnicas'},{id:'m_menu',title:'↩️ Menú principal'}])}
-  else if(id==='i_ext'){payload=buttons('🤍 *Extensiones*\n\nRealizamos aplicaciones de extensiones con cabello premium, parejo de raíz a puntas, y un resultado natural.\n\nTambién damos *mantenimiento*: retiro, ajuste y reinstalación.\n\nTodo comienza con una valoración. ¿Deseas agendarla?',[AG('ext'),MASSERV,MENU]);reset()}
-  else if(id==='i_pel'){payload=buttons('👑 *Pelucas, toppers y prótesis capilares*\n\nRealizamos pelucas personalizadas, toppers y prótesis capilares hechos a tu medida, cómodos y de aspecto natural.\n\nEn tu valoración definimos cuál es la mejor opción para ti. ¿Deseas agendarla?',[AG('pel'),MASSERV,MENU]);reset()}
-  else if(id==='i_alo'){payload=buttons('🌷 *Estamos contigo.*\n\nSi vives alopecia o pérdida de cabello, hay opciones hechas a tu medida: toppers, prótesis capilares y pelucas personalizadas, con un resultado natural, cómodo y elegante.\n\nTodo empieza con una valoración personalizada para entender tu caso y recomendarte lo más adecuado. 🤍\n\n¿Deseas agendarla?',[AG('alo'),['m_asesor','💬 Hablar con alguien'],MASSERV]);reset()}
-  else if(id==='i_tec'){payload=buttons('✨ *Técnicas de aplicación*\n\n🤍 *Microchip*\n🤍 *Nanochip*\n🤍 *Tape*\n🤍 *Cortina* (clip-in o cosida)\n\nLa técnica ideal depende de la densidad de tu cabello, tu estilo de vida y de si hay pérdida de cabello. En tu valoración te recomendamos la que mejor va contigo. 🤍\n\n¿Deseas agendarla?',[AG('tec'),MASSERV,MENU]);reset()}
-  else if(id==='m_ubicacion'){payload=buttons('📍 *Ubicación*\n'+info.direccion+'\n'+info.maps+'\n\n🕘 *Horarios*\n'+info.horarios+'\n\nAtendemos *solo con cita previa* 🤍'+firma,[AGENDAR,MENU]);reset()}
+    filas.push({id:'m_agendar',title:'↩️ Menú anterior'});
+    return lista(body,'Ver fechas',filas)};
+  if(id==='m_agendar'){reset();payload=lista('Es *OBLIGATORIO* antes de cualquier servicio, realizar una cita de valoración.\n\nDurante tu cita haremos un análisis con un Capilógrafo, evaluando la salud de tu cuero cabelludo, los folículos, cantidad, densidad, porosidad, largo y color, para poder obtener el resultado deseado.\n\nSelecciona la opción deseada:\n\n➖ Si ya tuviste tu cita de valoración y quieres tu *CITA DE APLICACIÓN*, elige la tercera opción.','Ver opciones',[
+    {id:'a_pres',title:'📅 Valoración PRESENCIAL'},{id:'a_video',title:'💻 Valoración VIRTUAL'},{id:'a_ya',title:'✅ Ya tuve mi valoración'},{id:'m_menu',title:'↩️ Menú anterior'}])}
+  else if(id==='a_ya'){payload=txt('Con gusto 🤍 Recepción te atenderá por este mismo chat para acordar los horarios disponibles de tu cita de aplicación. Mientras tanto, el asistente automático no te responderá.');reset();pausa=Number(info.pausa_asesor_min||90)}
+  else if(id==='a_pres'||id==='a_video'){
+    reset();
+    const o={a_pres:['Valoración presencial','Valoración general'],a_video:['Valoración por videollamada','Valoración general']}[id];
+    s.servicio=o[0];s.motivo=o[1];s.duracionMin=durVal;
+    payload=fechasLista('📅 ¿Qué día te acomoda?')}
+  else if(id==='d_fechas'&&s.servicio){payload=fechasLista('📅 ¿Qué día te acomoda?')}
+  else if(id==='m_info'){reset();payload=[txt('✨ *Conoce nuestros servicios*\n\nEn '+NEGOCIO+' nos especializamos en soluciones capilares personalizadas, buscando siempre un resultado natural, elegante y adaptado a ti. 🤍\n\n✨ *Extensiones de cabello*\nAportan largo, volumen o ambos. Trabajamos diferentes técnicas de aplicación según las características de tu cabello.\n\n✨ *Pelucas personalizadas*\nDiseñadas y adaptadas a tus medidas, densidad, color y estilo para lograr un resultado cómodo y natural.\n\n✨ *Toppers*\nIdeales para aportar volumen y cobertura en la parte superior de la cabeza, integrándose con tu propio cabello.\n\n✨ *Soluciones para cabello fino o con poco volumen*\nAlternativas personalizadas para aumentar visualmente la densidad y recuperar volumen.\n\n✨ *Alopecia o pérdida de cabello*\nSoluciones de cobertura parcial o total adaptadas a cada caso y etapa de pérdida de cabello.\n\n✨ *Mantenimiento de extensiones*\nRetiro, ajuste y reinstalación para mantener tus extensiones en óptimas condiciones y conservar un resultado impecable.\n\nCada servicio comienza con una valoración personalizada para recomendarte la opción más adecuada para ti. 🤍'),
+    buttons('✨ ¿Lista para descubrir cuál es la opción ideal para ti?\n\nEl siguiente paso es agendar tu valoración personalizada.',[['m_agendar','📅 Agendar cita'],MENU])]}
+  else if(id==='m_ubicacion'){payload=buttons('✨ *HORARIOS Y UBICACIÓN*\n\nSerá un placer recibirte en '+NEGOCIO+'. 🤍\n\n🕐 *Nuestros horarios de atención*\n'+info.horarios+'\n\n📍 *Ubicación*\n'+info.direccion+'\n'+info.maps+'\n\n✨ Atendemos únicamente con cita previa, para poder dedicarte el tiempo y la atención personalizada que mereces.\n\n🤍 ¿Qué deseas hacer?',[['m_agendar','📅 Agendar cita'],MENU]);reset()}
   else if(id==='m_asesor'){payload=txt(info.asesor);reset();pausa=Number(info.pausa_asesor_min||90)}
   else if(id.indexOf('f_')===0){
     s.fecha=id.slice(2);s.paso='elige_hora';
     const [y,m,d]=s.fecha.split('-').map(Number),dia=new Date(y,m-1,d);
-    const abre=Number(info.hora_apertura),cierra=wd(dia)===6?Number(info.hora_cierre_sabado):Number(info.hora_cierre);
-    const dur=Number(s.duracionMin||45),paso2=Math.max(30,Math.ceil(dur/30)*30),libres=[];
-    for(let min=abre*60;min+dur<=cierra*60;min+=paso2){const ini=new Date(y,m-1,d,0,min);if(ini.getTime()<=now)continue;libres.push(pad(ini.getHours())+':'+pad(ini.getMinutes()))}
-    payload=libres.length?lista('🕘 Estos son los horarios disponibles para el '+fechaLarga(s.fecha)+'. ¿Cuál prefieres?','Ver horarios',libres.slice(0,10).map(h=>({id:'h_'+h,title:h}))):buttons('Ese día ya no tenemos horarios disponibles 🤍',[['g_'+(s.motivoClave||'gen'),'📅 Otra fecha'],MENU])}
+    const libres=libresDe(s.fecha,now);
+    payload=libres.length?lista('🕘 Estos son los horarios disponibles para el '+fechaLarga(s.fecha)+'. ¿Cuál prefieres?','Ver horarios',libres.slice(0,9).map(h=>({id:'h_'+h,title:h12(h)})).concat([{id:'d_fechas',title:'↩️ Menú anterior'}])):buttons('Ese día ya no tenemos horarios disponibles 🤍',[['d_fechas','📅 Otra fecha'],['m_agendar','↩️ Menú anterior']])}
   else if(id.indexOf('h_')===0){
     s.hora=id.slice(2);s.paso='pide_nombre';
-    payload=buttons('✨ Ya casi terminamos.\n\n¿A nombre de quién agendo tu cita? Escribe tu nombre o usa el de tu perfil 🤍',[['n_perfil',('Usar '+perfil).slice(0,20)]])}
+    payload=buttons('✨ Ya casi terminamos.\n\n¿A nombre de quién agendo tu cita? Escribe tu nombre o usa el de tu perfil 🤍',[['n_perfil',('Usar '+perfil).slice(0,20)],['f_'+s.fecha,'↩️ Menú anterior']])}
   else if(paso==='pide_nombre'&&(id==='n_perfil'||(!id&&texto))){
     s.nombre=(id==='n_perfil'?perfil:texto).slice(0,60);s.paso='confirma';
-    payload=buttons('✨ *Resumen de tu cita*\n\n👤 Nombre: '+s.nombre+'\n💇‍♀️ Servicio: '+s.servicio+' (~'+s.duracionMin+' min)\n🎯 Motivo: '+s.motivo+'\n📅 Fecha: '+fechaLarga(s.fecha)+'\n🕘 Hora: '+s.hora+'\n➖ Costo: *sin ningún costo*\n\n¿Confirmas tu cita?',[['c_si','✅ Confirmar'],['c_no','Cancelar']])}
+    payload=buttons('✨ *Resumen de tu cita*\n\n👤 Nombre: '+s.nombre+'\n💇‍♀️ Servicio: '+s.servicio+' (~'+s.duracionMin+' min)\n🎯 Motivo: '+s.motivo+'\n📅 Fecha: '+fechaLarga(s.fecha)+'\n🕘 Hora: '+h12(s.hora)+(/^Valoración/.test(s.servicio)?'\n➖ Costo: *sin ningún costo*':'')+'\n\n¿Confirmas tu cita?',[['c_si','✅ Confirmar'],['c_no','Cancelar'],['f_'+s.fecha,'↩️ Menú anterior']])}
   else if(id==='c_si'&&paso==='confirma'){
-    payload=txt('✨ ¡Todo listo, '+s.nombre+'! Tu '+s.servicio.toLowerCase()+' quedó agendada para el '+fechaLarga(s.fecha)+' a las '+s.hora+' (dura aproximadamente '+s.duracionMin+' min).\n\n📍 '+info.direccion+'\n'+info.maps+'\n\nSerá un placer recibirte. 🤍'+firma);
-    registro={titulo:s.servicio+' - '+s.motivo+' - '+s.nombre,servicio:s.servicio,motivo:s.motivo,fecha:s.fecha,hora:s.hora,nombre:s.nombre};reset()}
+    const video=/videollamada/.test(s.servicio);
+    payload=txt('✨ ¡Todo listo, '+s.nombre+'! Tu '+s.servicio.toLowerCase()+' quedó agendada para el '+fechaLarga(s.fecha)+' a las '+h12(s.hora)+' (dura aproximadamente '+s.duracionMin+' min).\n\n'+(video?'💻 Recepción te compartirá el enlace de la videollamada por este chat.':'📍 '+info.direccion+'\n'+info.maps)+'\n\nSerá un placer '+(video?'atenderte':'recibirte')+'. 🤍'+firma);
+    citas.push({fecha:s.fecha,hora:s.hora});registro={titulo:s.servicio+' - '+s.motivo+' - '+s.nombre,servicio:s.servicio,motivo:s.motivo,fecha:s.fecha,hora:s.hora,nombre:s.nombre};reset()}
   else if(id==='c_no'){reset();payload=menu('Sin problema, cancelé la solicitud 🤍 ¿En qué más te puedo ayudar?')}
   else{reset();payload=menu()} // incluye m_menu y CUALQUIER texto
   ses=s; if(pausa) pausadoHasta=now+pausa*60000;
@@ -274,7 +263,7 @@ function send({id='',title='',text=''}){
     const r=decide(id,text);
     input.placeholder=ses.paso==='pide_nombre'?'Escribe tu nombre':'Mensaje';
     if(r.silent){sys('Bot en pausa: recepción atiende este chat. No responde.');return}
-    render(r.payload);
+    [].concat(r.payload).forEach(render);
     if(registro){sys('📅 Calendar: «'+registro.titulo+'» · '+registro.fecha+' '+registro.hora);sys('📊 Sheets → Servicio: '+registro.servicio+' | Motivo: '+registro.motivo+' | Cliente: '+registro.nombre);registro=null}
     if(r.pausa)sys('Bot pausado '+r.pausa+' min (pausadoHasta guardado en Zulma Sesiones)');
   },700);
@@ -309,7 +298,7 @@ if(window.visualViewport){
   vv.addEventListener('resize',fit);vv.addEventListener('scroll',()=>window.scrollTo(0,0));fit();
 }
 document.getElementById('f').onsubmit=e=>{e.preventDefault();const v=input.value.trim();if(!v)return;input.value='';send({text:v})};
-document.getElementById('reset').onclick=()=>{ses=fresh();registro=null;pausadoHasta=0;chat.innerHTML='';last=null;input.placeholder='Mensaje';phone.classList.remove('open');sys('Sesión reiniciada')};
+document.getElementById('reset').onclick=()=>{ses=fresh();registro=null;citas=[];pausadoHasta=0;chat.innerHTML='';last=null;input.placeholder='Mensaje';phone.classList.remove('open');sys('Sesión reiniciada')};
 sys('Simulación local: sin WhatsApp, Calendar ni Sheets. Escribe cualquier mensaje (por ejemplo, «Hola») para ver el menú; después usa los botones.');
 </script>
 </body>
