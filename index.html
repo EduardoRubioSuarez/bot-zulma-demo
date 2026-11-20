@@ -198,7 +198,7 @@ function decide(id,texto){
     return lista(body,'Ver fechas',filas)};
   if(id==='m_agendar'){reset();payload=lista('Es *OBLIGATORIO* antes de cualquier servicio, realizar una *Cita de Valoración*. No tiene ningún costo y dura aproximadamente '+durVal+' minutos.\n\nDurante tu cita haremos un análisis con un Capilógrafo, evaluando la salud de tu cuero cabelludo, los folículos, cantidad, densidad, porosidad, largo y color, para poder obtener el resultado deseado.\n\nSelecciona la opción deseada:\n\n➖ Si ya tuviste tu cita de valoración y deseas agendar tu *CITA DE APLICACIÓN*, elige la opción 3.','Ver opciones',[
     {id:'a_pres',title:'1- Valoración PRESENCIAL'},{id:'a_video',title:'2- Valoración VIRTUAL'},{id:'a_ya',title:'3- Ya tuve mi valoración'},{id:'m_menu',title:'↩️ Menú anterior'}])}
-  else if(id==='a_ya'){payload=txt('Con gusto 🤍 Recepción te atenderá por este mismo chat para acordar los horarios disponibles de tu cita de aplicación. Mientras tanto, el asistente automático no te responderá.');reset();pausa=Number(info.pausa_asesor_min||90)}
+  else if(id==='a_ya'){payload=txt('En breve, el personal de Recepción te atenderá en este mismo chat para acordar los horarios disponibles para tu Cita de Aplicación. Mientras tanto, el asistente automático no te responderá.\nAgradecemos tu paciencia.');reset();pausa=Number(info.pausa_asesor_min||90)}
   else if(id==='a_pres'||id==='a_video'){
     reset();
     const o={a_pres:['Valoración presencial','Valoración general'],a_video:['Valoración por videollamada','Valoración general']}[id];
