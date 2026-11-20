@@ -145,10 +145,10 @@ const info = {
   valoracion_min:'30',
   direccion:'Boulevard Colosio #1825, entre J. Mujica y Toronja. La Paz, BCS.',
   maps:'https://www.google.com/maps/search/?api=1&query=Boulevard+Colosio+1825+La+Paz+BCS',
-  horarios:'Valoraciones del 23 al 27 de noviembre, todos los días, con cita a las 9:00 AM, 1:30 PM, 5:00 PM o 5:30 PM',
-  dias_laborales:'1,2,3,4,5,6,7', horas_cita:'09:00,13:30,17:00,17:30',
+  horarios:'Lunes a viernes: 9:00 a.m. – 7:00 p.m.\nSábado: 9:00 a.m. – 2:00 p.m.\nDomingo: Cerrado',
+  dias_laborales:'1,2,3,4,5', horas_cita:'09:00,13:30,17:00,17:30',
   fecha_inicio:'2026-11-23', fecha_fin:'2026-11-27', // rango de fechas en que se agenda (cambiar aquí)
-  asesor:'Con gusto, Una persona de Recepción te responderá por este mismo chat en cuanto pueda. Mientras tanto, el asistente automático estará pausado y no te responderá.',
+  asesor:'En breve, el Personal de Recepción te atenderá en este mismo chat. Mientras tanto, el asistente automático no te responderá.\nAgradecemos tu paciencia.',
   pausa_asesor_min:'90'
 };
 const money=n=>'$'+Number(n).toLocaleString('es-MX');
@@ -178,7 +178,8 @@ const telefono='+52 55 1234 5678'; // en WhatsApp real: número del cliente (wa_
 const fresh=()=>({paso:'menu',servicio:'',motivo:'',detalle:'',duracionMin:0,fecha:'',hora:'',nombre:'',volver:''});
 ses=fresh();
 let citas=[]; // citas confirmadas (en producción: Google Calendar)
-const libresDe=(fecha,now)=>{const [y,m,d]=fecha.split('-').map(Number);return info.horas_cita.split(',').filter(h=>{const [hh,mm]=h.split(':').map(Number);return new Date(y,m-1,d,hh,mm).getTime()>now&&!citas.some(c=>c.fecha===fecha&&c.hora===h)})};
+const libresDe=(fecha,now)=>{if(fecha<=iso(new Date(now)))return []; // solo desde el día siguiente al contacto
+  const [y,m,d]=fecha.split('-').map(Number);return info.horas_cita.split(',').filter(h=>{const [hh,mm]=h.split(':').map(Number);return new Date(y,m-1,d,hh,mm).getTime()>now&&!citas.some(c=>c.fecha===fecha&&c.hora===h)})};
 let registro=null; // lo que se guardaría en Calendar y Sheets al confirmar
 
 // El bot reacciona a botones/listas (id). El texto solo se acepta al pedir el nombre y el motivo breve; en cualquier otro momento muestra el menú.
@@ -220,7 +221,7 @@ function decide(id,texto){
     payload=buttons('📝 Para que podamos prepararnos, cuéntanos brevemente el motivo de tu cita (por ejemplo: qué buscas lograr o qué te preocupa de tu cabello). Escríbelo en un mensaje 🤍',[['o_omitir','Omitir'],['h_'+s.hora,'↩️ Menú anterior']])}
   else if(paso==='pide_detalle'&&(id==='o_omitir'||(!id&&texto))){
     s.detalle=id==='o_omitir'?'':texto.slice(0,300);s.paso='confirma';
-    payload=buttons('✨ *Resumen de tu cita*\n\n👤 Nombre: '+s.nombre+'\n📞 Contacto: '+telefono+'\n💇‍♀️ Servicio: '+s.servicio+' (~'+s.duracionMin+' min)\n🎯 Motivo: '+s.motivo+(s.detalle?'\n📝 Detalle: '+s.detalle:'')+'\n📅 Fecha: '+fechaLarga(s.fecha)+'\n🕘 Hora: '+h12(s.hora)+(/^Valoración/.test(s.servicio)?'\n➖ Costo: *sin ningún costo*':'')+'\n\n¿Confirmas tu cita?',[['c_si','✅ Confirmar'],['c_no','Cancelar'],['f_'+s.fecha,'↩️ Menú anterior']])}
+    payload=buttons('✨ *Resumen de tu cita*\n\n👤 Nombre: '+s.nombre+'\n📞 Contacto: '+telefono+'\n💇‍♀️ Servicio: '+s.servicio+' (~'+s.duracionMin+' min)\n🎯 Motivo: '+(s.detalle||s.motivo)+'\n📅 Fecha: '+fechaLarga(s.fecha)+'\n🕘 Hora: '+h12(s.hora)+(/^Valoración/.test(s.servicio)?'\n➖ Costo: *sin ningún costo*':'')+'\n\n¿Confirmas tu cita?',[['c_si','✅ Confirmar'],['c_no','Cancelar'],['f_'+s.fecha,'↩️ Menú anterior']])}
   else if(id==='c_si'&&paso==='confirma'){
     const video=/videollamada/.test(s.servicio);
     payload=txt('✨ ¡Todo listo, '+s.nombre+'! Tu '+s.servicio.toLowerCase()+' quedó agendada para el '+fechaLarga(s.fecha)+' a las '+h12(s.hora)+' (dura aproximadamente '+s.duracionMin+' min).\n\n📞 Contacto: '+telefono+'\n\n'+(video?'💻 Recepción te compartirá el enlace de la videollamada por este chat.':'📍 '+info.direccion+'\n'+info.maps)+'\n\nSerá un placer '+(video?'atenderte':'recibirte')+'. 🤍'+firma);
