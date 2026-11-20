@@ -145,8 +145,9 @@ const info = {
   valoracion_min:'30',
   direccion:'Boulevard Colosio #1825, entre J. Mujica y Toronja. La Paz, BCS.',
   maps:'https://www.google.com/maps/search/?api=1&query=Boulevard+Colosio+1825+La+Paz+BCS',
-  horarios:'Lunes a viernes, con cita a las 5:00 PM, 6:00 PM o 7:00 PM\nSábado y domingo: Cerrado',
-  dias_laborales:'1,2,3,4,5', horas_cita:'17:00,18:00,19:00',
+  horarios:'Valoraciones del 23 al 27 de noviembre, todos los días, con cita a las 9:00 AM, 1:30 PM, 5:00 PM o 5:30 PM',
+  dias_laborales:'1,2,3,4,5,6,7', horas_cita:'09:00,13:30,17:00,17:30',
+  fecha_inicio:'2026-11-23', fecha_fin:'2026-11-27', // rango de fechas en que se agenda (cambiar aquí)
   asesor:'Con gusto, Una persona de Recepción te responderá por este mismo chat en cuanto pueda. Mientras tanto, el asistente automático estará pausado y no te responderá.',
   pausa_asesor_min:'90'
 };
@@ -161,7 +162,7 @@ const lista=(b,label,rows)=>({type:'list',body:b,label,items:rows});
 
 const MENU=['m_menu','↩️ Menú anterior'];
 const menu=intro=>lista((intro||'Hola! Bienvenida a '+NEGOCIO+'.\nQueremos brindarte una experiencia eficiente desde el primer momento.')+'\n\nSelecciona la opción que deseas:','Ver opciones',[
- {id:'m_agendar',title:'📅 Agendar cita'},{id:'m_info',title:'✨ Conoce servicios'},{id:'m_ubicacion',title:'📍 Ubicación y horarios'},{id:'m_asesor',title:'💬 Hablar a Recepción'}]);
+ {id:'m_agendar',title:'📅 Agendar cita'},{id:'m_info',title:'✨ Nuestros Servicios'},{id:'m_ubicacion',title:'📍 Ubicación y horarios'},{id:'m_asesor',title:'💬 Hablar a Recepción'}]);
 
 const DIAS=['dom','lun','mar','mié','jue','vie','sáb'],MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const DIASL=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],MESESL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -189,7 +190,8 @@ function decide(id,texto){
   let payload,pausa=0;
   const fechasLista=body=>{
     const lab=info.dias_laborales.split(',').map(Number),filas=[];
-    for(let d=0;d<30&&filas.length<9;d++){const dia=new Date();dia.setDate(dia.getDate()+d);if(lab.indexOf(wd(dia))<0)continue;if(!libresDe(iso(dia),now).length)continue;
+    const [iy,im,idd]=info.fecha_inicio.split('-').map(Number),[fy,fm,fd]=info.fecha_fin.split('-').map(Number),fin=new Date(fy,fm-1,fd).getTime();
+    for(let d=0;d<60&&filas.length<9;d++){const dia=new Date(iy,im-1,idd+d);if(dia.getTime()>fin)break;if(lab.indexOf(wd(dia))<0)continue;if(!libresDe(iso(dia),now).length)continue;
       filas.push({id:'f_'+iso(dia),title:DIAS[dia.getDay()]+' '+dia.getDate()+' '+MESES[dia.getMonth()]})}
     filas.push({id:'m_agendar',title:'↩️ Menú anterior'});
     return lista(body,'Ver fechas',filas)};
@@ -202,8 +204,7 @@ function decide(id,texto){
     s.servicio=o[0];s.motivo=o[1];s.duracionMin=durVal;
     payload=fechasLista('📅 ¿Qué día te acomoda?')}
   else if(id==='d_fechas'&&s.servicio){payload=fechasLista('📅 ¿Qué día te acomoda?')}
-  else if(id==='m_info'){reset();payload=[txt('✨ *Conoce nuestros servicios*\n\nEn '+NEGOCIO+' nos especializamos en soluciones capilares personalizadas, buscando siempre un resultado natural, elegante y adaptado a ti. 🤍\n\n✨ *Extensiones de cabello*\nAportan largo, volumen o ambos. Trabajamos diferentes técnicas de aplicación según las características de tu cabello.\n\n✨ *Pelucas personalizadas*\nDiseñadas y adaptadas a tus medidas, densidad, color y estilo para lograr un resultado cómodo y natural.\n\n✨ *Toppers*\nIdeales para aportar volumen y cobertura en la parte superior de la cabeza, integrándose con tu propio cabello.\n\n✨ *Soluciones para cabello fino o con poco volumen*\nAlternativas personalizadas para aumentar visualmente la densidad y recuperar volumen.\n\n✨ *Alopecia o pérdida de cabello*\nSoluciones de cobertura parcial o total adaptadas a cada caso y etapa de pérdida de cabello.\n\n✨ *Mantenimiento de extensiones*\nRetiro, ajuste y reinstalación para mantener tus extensiones en óptimas condiciones y conservar un resultado impecable.\n\nCada servicio comienza con una valoración personalizada para recomendarte la opción más adecuada para ti. 🤍'),
-    buttons('✨ ¿Lista para descubrir cuál es la opción ideal para ti?\n\nEl siguiente paso es agendar tu valoración personalizada.',[['m_agendar','📅 Agendar cita'],MENU])]}
+  else if(id==='m_info'){reset();payload=buttons('✨ *CONOCE NUESTROS SERVICIOS*\n\nEn '+NEGOCIO+' elevamos tu experiencia capilar con soluciones diseñadas exclusivamente para ti. Cada detalle se personaliza para ofrecerte una integración natural.\n\n✨ Aplicación de Extensiones\n✨ Pelucas personalizadas\n✨ Toppers\n✨ Tratamientos para el Cuidado\n✨ Venta de materiales de aplicación\n\n🤍 ¿Quieres saber cuál es la opción adecuada para ti? Agenda tu cita de Valoración.',[['m_agendar','📅 Agendar cita'],MENU])}
   else if(id==='m_ubicacion'){payload=buttons('✨ *HORARIOS Y UBICACIÓN*\n\nSerá un placer recibirte en '+NEGOCIO+'. 🤍\n\n🕐 *Nuestros horarios de atención*\n'+info.horarios+'\n\n📍 *Ubicación*\n'+info.direccion+'\n'+info.maps+'\n\n✨ Atendemos únicamente con cita previa, para poder dedicarte el tiempo y la atención personalizada que mereces.\n\n🤍 ¿Qué deseas hacer?',[['m_agendar','📅 Agendar cita'],MENU]);reset()}
   else if(id==='m_asesor'){payload=txt(info.asesor);reset();pausa=Number(info.pausa_asesor_min||90)}
   else if(id.indexOf('f_')===0){
