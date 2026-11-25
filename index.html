@@ -196,9 +196,9 @@ function decide(id,texto){
       filas.push({id:'f_'+iso(dia),title:DIAS[dia.getDay()]+' '+dia.getDate()+' '+MESES[dia.getMonth()]})}
     filas.push({id:'m_agendar',title:'↩️ Menú anterior'});
     return lista(body,'Ver fechas',filas)};
-  if(id==='m_agendar'){reset();payload=lista('Es *OBLIGATORIO* antes de cualquier servicio, realizar una *Cita de Valoración*. No tiene ningún costo y dura aproximadamente '+durVal+' minutos.\n\nDurante tu cita haremos un análisis con un Capilógrafo, evaluando la salud de tu cuero cabelludo, los folículos, cantidad, densidad, porosidad, largo y color, para poder obtener el resultado deseado.\n\nSelecciona la opción deseada:\n\n➖ Si ya tuviste tu cita de valoración y deseas agendar tu *CITA DE APLICACIÓN*, elige la opción 3.','Ver opciones',[
-    {id:'a_pres',title:'1- Valoración PRESENCIAL'},{id:'a_video',title:'2- Valoración VIRTUAL'},{id:'a_ya',title:'3- Ya tuve mi valoración'},{id:'m_menu',title:'↩️ Menú anterior'}])}
-  else if(id==='a_ya'){payload=txt('En breve, el personal de Recepción te atenderá en este mismo chat para acordar los horarios disponibles para tu Cita de Aplicación. Mientras tanto, el asistente automático no te responderá.\nAgradecemos tu paciencia.');reset();pausa=Number(info.pausa_asesor_min||90)}
+  if(id==='m_agendar'){reset();payload=lista('Si es la primera vez que nos visitas, es *OBLIGATORIO* que antes de cualquier servicio acudas a una *Cita de Valoración*. No tiene ningún costo y dura aprox. '+durVal+' minutos.\n\nAquí hacemos un análisis completo con un Capilógrafo, evaluando la salud de tu cuero cabelludo y de tu cabello. ¡Este es el primer paso hacia el resultado que tú quieres lograr!\n\nElige la opción deseada:','Ver opciones',[
+    {id:'a_pres',title:'Cita Valoración Presencial'},{id:'a_video',title:'Cita Valoración Videollamada'},{id:'a_apli',title:'Cita de Aplicación'},{id:'a_mant',title:'Cita de Mantenimiento'},{id:'m_menu',title:'↩️ Menú anterior'}])}
+  else if(id==='a_apli'||id==='a_mant'){payload=txt('En breve, el personal de Recepción te atenderá en este mismo chat para acordar los horarios disponibles para tu '+(id==='a_apli'?'Cita de Aplicación':'Cita de Mantenimiento')+'. Mientras tanto, el asistente automático no te responderá.\nAgradecemos tu paciencia.');reset();pausa=Number(info.pausa_asesor_min||90)}
   else if(id==='a_pres'||id==='a_video'){
     reset();
     const o={a_pres:['Valoración presencial','Valoración general'],a_video:['Valoración por videollamada','Valoración general']}[id];
@@ -215,9 +215,9 @@ function decide(id,texto){
     payload=libres.length?lista('🕘 Estos son los horarios disponibles para el '+fechaLarga(s.fecha)+'. ¿Cuál prefieres?','Ver horarios',libres.slice(0,9).map(h=>({id:'h_'+h,title:h12(h)})).concat([{id:'d_fechas',title:'↩️ Menú anterior'}])):buttons('Ese día ya no tenemos horarios disponibles 🤍',[['d_fechas','📅 Otra fecha'],['m_agendar','↩️ Menú anterior']])}
   else if(id.indexOf('h_')===0){
     s.hora=id.slice(2);s.paso='pide_nombre';
-    payload=buttons('✨ Ya casi terminamos.\n\n¿A nombre de quién agendo tu cita? Escribe tu nombre o usa el de tu perfil 🤍',[['n_perfil',('Usar '+perfil).slice(0,20)],['f_'+s.fecha,'↩️ Menú anterior']])}
-  else if(paso==='pide_nombre'&&(id==='n_perfil'||(!id&&texto))){
-    s.nombre=(id==='n_perfil'?perfil:texto).slice(0,60);s.paso='pide_detalle';
+    payload=buttons('✨ Ya casi terminamos.\n\n¿A nombre de quién agendo tu cita? Escribe tu nombre en un mensaje 🤍',[['f_'+s.fecha,'↩️ Menú anterior']])}
+  else if(paso==='pide_nombre'&&!id&&texto){
+    s.nombre=texto.slice(0,60);s.paso='pide_detalle';
     payload=buttons('📝 Para que podamos prepararnos, cuéntanos brevemente el motivo de tu cita (por ejemplo: qué buscas lograr o qué te preocupa de tu cabello). Escríbelo en un mensaje 🤍',[['o_omitir','Omitir'],['h_'+s.hora,'↩️ Menú anterior']])}
   else if(paso==='pide_detalle'&&(id==='o_omitir'||(!id&&texto))){
     s.detalle=id==='o_omitir'?'':texto.slice(0,300);s.paso='confirma';
