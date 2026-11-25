@@ -197,7 +197,7 @@ function decide(id,texto){
     filas.push({id:'m_agendar',title:'↩️ Menú anterior'});
     return lista(body,'Ver fechas',filas)};
   if(id==='m_agendar'){reset();payload=lista('Si es la primera vez que nos visitas, es *OBLIGATORIO* que antes de cualquier servicio acudas a una *Cita de Valoración*. No tiene ningún costo y dura aprox. '+durVal+' minutos.\n\nAquí hacemos un análisis completo con un Capilógrafo, evaluando la salud de tu cuero cabelludo y de tu cabello. ¡Este es el primer paso hacia el resultado que tú quieres lograr!\n\nElige la opción deseada:','Ver opciones',[
-    {id:'a_pres',title:'Cita Valoración Presencial'},{id:'a_video',title:'Cita Valoración Videollamada'},{id:'a_apli',title:'Cita de Aplicación'},{id:'a_mant',title:'Cita de Mantenimiento'},{id:'m_menu',title:'↩️ Menú anterior'}])}
+    {id:'a_pres',title:'Cita Valor. Presencial'},{id:'a_video',title:'Cita Valor. Videollamada'},{id:'a_apli',title:'Cita de Aplicación'},{id:'a_mant',title:'Cita de Mantenimiento'},{id:'m_menu',title:'↩️ Menú anterior'}])}
   else if(id==='a_apli'||id==='a_mant'){payload=txt('En breve, el personal de Recepción te atenderá en este mismo chat para acordar los horarios disponibles para tu '+(id==='a_apli'?'Cita de Aplicación':'Cita de Mantenimiento')+'. Mientras tanto, el asistente automático no te responderá.\nAgradecemos tu paciencia.');reset();pausa=Number(info.pausa_asesor_min||90)}
   else if(id==='a_pres'||id==='a_video'){
     reset();
