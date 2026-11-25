@@ -227,7 +227,7 @@ function decide(id,texto){
     payload=txt('✨ ¡Todo listo, '+s.nombre+'! Tu '+s.servicio.toLowerCase()+' quedó agendada para el '+fechaLarga(s.fecha)+' a las '+h12(s.hora)+' (dura aproximadamente '+s.duracionMin+' min).\n\n📞 Contacto: '+telefono+'\n\n'+(video?'💻 Recepción te compartirá el enlace de la videollamada por este chat.':'📍 '+info.direccion+'\n'+info.maps)+'\n\nSerá un placer '+(video?'atenderte':'recibirte')+'. 🤍'+firma);
     citas.push({fecha:s.fecha,hora:s.hora});registro={titulo:s.servicio+' - '+s.motivo+' - '+s.nombre,servicio:s.servicio,motivo:s.motivo,detalle:s.detalle,fecha:s.fecha,hora:s.hora,nombre:s.nombre};reset();s.paso='post_cita'}
   else if(id==='c_no'){reset();payload=menu('Sin problema, cancelé la solicitud 🤍 ¿En qué más te puedo ayudar?')}
-  else if(paso==='post_cita'&&!id){reset();payload=buttons('🤍 Será un placer atenderte. Si necesitas algo más, elige una opción:',[['m_menu','📋 Ver menú'],['m_asesor','💬 Recepción']])} // primer texto después de agendar: mensaje corto en lugar del menú (una sola vez)
+  else if(paso==='post_cita'&&!id){reset();payload=buttons('🤍 Será un placer atenderte. Si necesitas algo más, elige una opción:',[['m_menu','📋 Ver menú'],['m_asesor','Hablar a Recepción']])} // primer texto después de agendar: mensaje corto en lugar del menú (una sola vez)
   else{reset();payload=menu()} // incluye m_menu y CUALQUIER texto
   ses=s; if(pausa) pausadoHasta=now+pausa*60000;
   return {payload,pausa};
