@@ -162,7 +162,7 @@ const lista=(b,label,rows)=>({type:'list',body:b,label,items:rows});
 
 const MENU=['m_menu','↩️ Menú anterior'];
 const menu=intro=>lista((intro||'Hola! Bienvenida a '+NEGOCIO+'.\nQueremos brindarte una experiencia eficiente desde el primer momento.')+'\n\nSelecciona la opción que deseas:','Ver opciones',[
- {id:'m_agendar',title:'📅 Agendar cita'},{id:'m_info',title:'✨ Nuestros Servicios'},{id:'m_ubicacion',title:'📍 Ubicación y horarios'},{id:'m_asesor',title:'💬 Hablar a Recepción'}]);
+ {id:'m_agendar',title:'📅 Agendar cita'},{id:'m_info',title:'✨ Nuestros Servicios'},{id:'m_precios',title:'💰 Precios'},{id:'m_ubicacion',title:'📍 Ubicación y horarios'},{id:'m_asesor',title:'💬 Hablar a Recepción'}]);
 
 const DIAS=['dom','lun','mar','mié','jue','vie','sáb'],MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const DIASL=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],MESESL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -206,6 +206,10 @@ function decide(id,texto){
     payload=fechasLista('📅 ¿Qué día te acomoda?')}
   else if(id==='d_fechas'&&s.servicio){payload=fechasLista('📅 ¿Qué día te acomoda?')}
   else if(id==='m_info'){reset();payload=buttons('✨ *CONOCE NUESTROS SERVICIOS*\n\nEn '+NEGOCIO+' elevamos tu experiencia capilar con soluciones diseñadas exclusivamente para ti. Cada detalle se personaliza para ofrecerte una integración natural.\n\n✨ Aplicación de Extensiones\n✨ Pelucas personalizadas\n✨ Toppers\n✨ Tratamientos para el Cuidado\n✨ Venta de materiales de aplicación\n\n🤍 ¿Quieres saber cuál es la opción adecuada para ti? Agenda tu cita de Valoración.',[['m_agendar','📅 Agendar cita'],MENU])}
+  else if(id==='m_precios'){reset();payload=lista('💰 *PRECIOS*\n\n➖➖➖➖➖➖➖➖➖➖➖\n¿Qué medida deseas?','Ver medidas',[
+    {id:'p_18',title:'18”'},{id:'p_20',title:'20”'},{id:'p_22',title:'22”'},{id:'p_24',title:'24”'},{id:'p_26',title:'26”'},{id:'m_menu',title:'↩️ Menú anterior'}])}
+  else if(id==='p_20'){reset();payload=buttons('✨ *PRESUPUESTO*\n*Cabello + aplicación*\n\n➖➖➖➖➖➖➖➖➖➖➖\n*Virgen, color oscuro natural*\n_20” pulgadas_\n\n50 gr: $2,650\n100 gr: $5,300\n150 gr: $7,950\n200 gr: $10,600\n250 gr: $13,250\n300 gr: $15,900\n350 gr: $18,550\n\n➖➖➖➖➖➖➖➖➖➖➖\n*Tono miel o rubio*\n_20” pulgadas_\n\n50 gr: $3,150\n100 gr: $6,300\n150 gr: $9,450\n200 gr: $12,600\n250 gr: $15,750\n300 gr: $18,900\n350 gr: $22,050\n\n🤍 ¿Qué deseas hacer?',[['m_agendar','📅 Agendar cita'],['m_precios','💰 Otra medida'],MENU])}
+  else if(/^p_\d+$/.test(id)){reset();payload=buttons('🤍 Por el momento no tenemos el presupuesto de esa medida en este chat. Con gusto Recepción te lo comparte.',[['m_asesor','💬 Hablar a Recepción'],['m_precios','💰 Otra medida'],MENU])}
   else if(id==='m_ubicacion'){payload=buttons('✨ *HORARIOS Y UBICACIÓN*\n\nSerá un placer recibirte en '+NEGOCIO+'. 🤍\n\n🕐 *Nuestros horarios de atención*\n'+info.horarios+'\n\n📍 *Ubicación*\n'+info.direccion+'\n'+info.maps+'\n\n✨ Atendemos únicamente con cita previa, para poder dedicarte el tiempo y la atención personalizada que mereces.\n\n🤍 ¿Qué deseas hacer?',[['m_agendar','📅 Agendar cita'],MENU]);reset()}
   else if(id==='m_asesor'){payload=txt(info.asesor);reset();pausa=Number(info.pausa_asesor_min||90)}
   else if(id.indexOf('f_')===0){
